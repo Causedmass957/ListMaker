@@ -1,6 +1,7 @@
 package com.raywenderlich.listmaker
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -12,7 +13,7 @@ import android.widget.EditText
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ListSelectionRecyclerViewAdapter.ListSelectionRecyclerViewClickListener {
     lateinit var listsRecyclerView: RecyclerView
     val listDataManager: ListDataManager = ListDataManager(this)
 
@@ -30,7 +31,7 @@ class MainActivity : AppCompatActivity() {
 
         listsRecyclerView.layoutManager = LinearLayoutManager(this)
 
-        listsRecyclerView.adapter = ListSelectionRecyclerViewAdapter(lists)
+        listsRecyclerView.adapter = ListSelectionRecyclerViewAdapter(lists, this)
     }
 
     private fun showCreateListDialog() {
@@ -53,6 +54,7 @@ class MainActivity : AppCompatActivity() {
             recyclerAdapter.addList(list)
 
             dialog.dismiss()
+            showListDetail(list)
         }
 
         builder.create().show()
@@ -72,5 +74,20 @@ class MainActivity : AppCompatActivity() {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun showListDetail(list: TaskList) {
+        val listDetailIntent = Intent(this, ListDetailActivity::class.java)
+        listDetailIntent.putExtra(INTENT_LIST_KEY, list)
+
+        startActivity(listDetailIntent)
+    }
+
+    companion object {
+        const val INTENT_LIST_KEY = "list"
+    }
+
+    override fun listItemClicked(list: TaskList) {
+        showListDetail(list)
     }
 }
